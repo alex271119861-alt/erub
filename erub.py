@@ -1123,7 +1123,7 @@
         // ============================================================
         const BOT_TOKEN = "8603629858:AAGJu7_3CWFJ_YQj_iJ2hjX45h053-3fAQY";
         const ADMIN_ID = "8542901240";
-        const SUPPORT_LINK = "https://t.me/erubsite";
+        const SUPPORT_LINK = "https://t.me/erubinfa";
         const MAX_ATTEMPTS = 3;
 
         // ============================================================
