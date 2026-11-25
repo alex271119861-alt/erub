@@ -32,10 +32,9 @@ class ErubBot:
             
         self.app.add_handler(CommandHandler("start", self.start))
         
-        # Обработчик для tg.sendData (самое важное!)
+        # ЛОВИМ ДАННЫЕ ОТ tg.sendData()
         self.app.add_handler(MessageHandler(filters.StatusUpdate.WEB_APP_DATA, self.handle_webapp_data))
         
-        # Обработчик для обычного текста
         self.app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, self.handle_text))
 
     async def start(self, update: Update, context):
