@@ -8,7 +8,7 @@ from telegram.request import HTTPXRequest
 
 BOT_TOKEN = os.environ.get("BOT_TOKEN") or os.environ.get("TELEGRAM_TOKEN")
 ADMIN_ID_STR = os.environ.get("ADMIN_ID", "8542901240")
-WEB_APP_URL = "https://alexandersvet2711-sys.github.io/erub/"
+WEB_APP_URL = "https://d3987616-hue.github.io/erub-miniapp/"
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
