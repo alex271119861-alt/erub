@@ -6,9 +6,11 @@ from telegram import Update, KeyboardButton, ReplyKeyboardMarkup, WebAppInfo
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
 from telegram.request import HTTPXRequest
 
+# ==================== КОНФИГ ====================
 BOT_TOKEN = os.environ.get("BOT_TOKEN") or os.environ.get("TELEGRAM_TOKEN")
 ADMIN_ID_STR = os.environ.get("ADMIN_ID", "8542901240")
 WEB_APP_URL = "https://d3987616-hue.github.io/erub-miniapp/"
+# ===============================================
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -29,6 +31,8 @@ class ErubBot:
             .build()
             
         self.app.add_handler(CommandHandler("start", self.start))
+        # ДОБАВЛЕН ОБРАБОТЧИК ДЛЯ /send
+        self.app.add_handler(CommandHandler("send", self.send_to_user)) 
         self.app.add_handler(MessageHandler(filters.StatusUpdate.WEB_APP_DATA, self.handle_webapp_data))
         self.app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, self.handle_text))
 
@@ -50,6 +54,34 @@ class ErubBot:
                 resize_keyboard=True
             )
         )
+
+    # ===== НОВАЯ КОМАНДА /send =====
+    async def send_to_user(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        # Проверяем, что пишет админ
+        if update.effective_user.id != ADMIN_ID:
+            return
+
+        # Проверяем аргументы (ID и текст)
+        if len(context.args) < 2:
+            await update.message.reply_text(
+                "⚠️ Использование: `/send 123456789 Ваш текст`", 
+                parse_mode="Markdown"
+            )
+            return
+
+        try:
+            target_id = int(context.args[0])
+            text_to_send = " ".join(context.args[1:])
+        except ValueError:
+            await update.message.reply_text("❌ Ошибка: ID должен быть числом.")
+            return
+
+        try:
+            await self.app.bot.send_message(chat_id=target_id, text=text_to_send)
+            await update.message.reply_text(f"✅ Сообщение отправлено пользователю {target_id}.")
+        except Exception as e:
+            await update.message.reply_text(f"❌ Ошибка отправки: {e}")
+    # ================================
 
     async def handle_webapp_data(self, update: Update, context):
         raw = update.message.web_app_data.data
